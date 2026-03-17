@@ -1,5 +1,5 @@
 export { ZenColors } from './ZenColors';
-export { presets, ember, amber, glacier, subtle, aurora, sunset, ocean, neon } from './presets';
+export { presets, ember, amber, glacier, subtle, aurora, sunset, ocean, neon, lava, nebula, sakura, matrix } from './presets';
 export type {
   ZenColorsProps,
   BlobConfig,

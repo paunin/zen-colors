@@ -11,6 +11,10 @@ const PRESET_DESCRIPTIONS: Record<PresetName, string> = {
   sunset: 'Orange, pink and purple gradient sky',
   ocean: 'Deep blue and teal underwater tones',
   neon: 'Vibrant multi-color electric palette',
+  lava: 'Molten orange and red, slow-moving glow',
+  nebula: 'Deep-space violet, rose and cyan gas clouds',
+  sakura: 'Soft cherry blossom pinks and whites',
+  matrix: 'Green digital rain cascading beams',
 };
 
 const ANIMATION_TYPES: AnimationType[] = [
@@ -21,10 +25,20 @@ const ANIMATION_TYPES: AnimationType[] = [
   'wander',
 ];
 
+const ANIMATION_COLORS: Record<AnimationType, [string, string]> = {
+  drift: ['#3b82f6', '#06b6d4'],
+  pulse: ['#ef4444', '#f97316'],
+  orbit: ['#a855f7', '#ec4899'],
+  breathe: ['#10b981', '#34d399'],
+  wander: ['#f59e0b', '#eab308'],
+  none: ['#6b7280', '#9ca3af'],
+};
+
 function animationDemoBlobs(type: AnimationType): BlobConfig[] {
+  const [primary, secondary] = ANIMATION_COLORS[type] ?? ['#6366f1', '#ec4899'];
   return [
     {
-      color: '#6366f1',
+      color: primary,
       x: 50,
       y: 50,
       size: 35,
@@ -32,7 +46,7 @@ function animationDemoBlobs(type: AnimationType): BlobConfig[] {
       animation: { type, speed: 1, range: 20, phase: 0 },
     },
     {
-      color: '#ec4899',
+      color: secondary,
       x: 40,
       y: 45,
       size: 25,
@@ -73,6 +87,7 @@ export function App() {
           speed: 0.5 + i * 0.1,
           range: 12 + i * 2,
           phase: i * 72,
+          duration: 14 + i * 2,
         },
       };
     });
@@ -88,10 +103,9 @@ export function App() {
     setJsonError(null);
   }, [playgroundBlobs]);
 
-  const handleJsonChange = useCallback((value: string) => {
-    setBlobsJson(value);
+  const applyJson = useCallback(() => {
     try {
-      const parsed: unknown = JSON.parse(value);
+      const parsed: unknown = JSON.parse(blobsJson);
       if (Array.isArray(parsed) && parsed.length > 0) {
         setLiveBlobs(parsed as BlobConfig[]);
         setJsonError(null);
@@ -101,23 +115,41 @@ export function App() {
     } catch (err) {
       setJsonError(err instanceof Error ? err.message : 'Invalid JSON');
     }
-  }, []);
+  }, [blobsJson]);
 
   const randomizeBlobs = useCallback(() => {
     const shapes: BlobShape[] = ['circle', 'ellipse', 'beam', 'ring', 'triangle', 'scalene', 'square', 'pentagon'];
     const anims: AnimationType[] = ['drift', 'breathe', 'wander', 'orbit', 'pulse'];
     const count = 2 + Math.floor(Math.random() * 4);
     const rand = (min: number, max: number) => min + Math.random() * (max - min);
-    const randHex = () => '#' + Array.from({ length: 6 }, () => '0123456789abcdef'[Math.floor(Math.random() * 16)]).join('');
+    const randNeon = () => {
+      const h = Math.floor(Math.random() * 360);
+      const s = 85 + Math.floor(Math.random() * 16);
+      const l = 50 + Math.floor(Math.random() * 16);
+      const hslToHex = (h: number, s: number, l: number) => {
+        const a = s / 100 * Math.min(l, 100 - l) / 100;
+        const f = (n: number) => {
+          const k = (n + h / 30) % 12;
+          const c = l / 100 - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+          return Math.round(255 * c).toString(16).padStart(2, '0');
+        };
+        return `#${f(0)}${f(8)}${f(4)}`;
+      };
+      return hslToHex(h, s, l);
+    };
     const blobs: BlobConfig[] = Array.from({ length: count }, (_, i) => {
       const s = shapes[Math.floor(Math.random() * shapes.length)] ?? 'circle';
+      const useRange = Math.random() > 0.5;
+      const opMin = Math.round(rand(0.3, 0.6) * 100) / 100;
+      const opMax = Math.round(rand(0.7, 1.0) * 100) / 100;
       return {
         id: `rand-${i}`,
-        color: randHex(),
+        color: randNeon(),
         x: Math.round(rand(15, 85)),
         y: Math.round(rand(20, 80)),
         size: Math.round(rand(15, 50)),
-        opacity: Math.round(rand(0.5, 1) * 100) / 100,
+        opacity: useRange ? [opMin, opMax] as [number, number] : Math.round(rand(0.5, 1) * 100) / 100,
+        ...(useRange ? { opacityDuration: Math.round(rand(6, 16)) } : {}),
         shape: s,
         scaleX: s === 'circle' || s === 'ring' ? 1 : Math.round(rand(0.6, 2.0) * 10) / 10,
         scaleY: s === 'circle' || s === 'ring' ? 1 : Math.round(rand(0.5, 1.5) * 10) / 10,
@@ -127,6 +159,7 @@ export function App() {
           speed: Math.round(rand(0.2, 1.0) * 10) / 10,
           range: Math.round(rand(5, 20)),
           phase: Math.round(rand(0, 360)),
+          duration: Math.round(rand(10, 25)),
         },
       };
     });
@@ -377,16 +410,19 @@ export function App() {
         </div>
 
         <div className="playground-editor">
-          <div className="editor-header">
-            <label className="editor-label">Blob Configuration (JSON)</label>
-            <button className="random-btn" onClick={randomizeBlobs}>Random</button>
+          <label className="editor-label">Blob Configuration (JSON)</label>
+          <div className="editor-body">
+            <textarea
+              className="blob-textarea"
+              value={blobsJson}
+              onChange={(e) => setBlobsJson(e.target.value)}
+              spellCheck={false}
+            />
+            <div className="editor-actions">
+              <button className="apply-btn" onClick={applyJson}>Apply</button>
+              <button className="random-btn" onClick={randomizeBlobs}>Random</button>
+            </div>
           </div>
-          <textarea
-            className="blob-textarea"
-            value={blobsJson}
-            onChange={(e) => handleJsonChange(e.target.value)}
-            spellCheck={false}
-          />
           {jsonError && <div className="json-error">{jsonError}</div>}
         </div>
       </section>
@@ -398,45 +434,51 @@ export function App() {
           Install the package and drop the component into any React app.
         </p>
 
-        <div className="get-started-grid">
+        <div className="get-started-block">
           <div className="get-started-step">
             <div className="step-number">1</div>
-            <h3>Install</h3>
-            <div className="code-block">npm install zen-colors</div>
+            <div className="step-content">
+              <h3>Install</h3>
+              <div className="code-block">npm install zen-colors</div>
+            </div>
           </div>
 
           <div className="get-started-step">
             <div className="step-number">2</div>
-            <h3>Import</h3>
-            <div className="code-block">
-              <span className="kw">import</span>
-              {' { ZenColors, presets } '}
-              <span className="kw">from</span>{' '}
-              <span className="str">'zen-colors'</span>
+            <div className="step-content">
+              <h3>Import</h3>
+              <div className="code-block">
+                <span className="kw">import</span>
+                {' { ZenColors, presets } '}
+                <span className="kw">from</span>{' '}
+                <span className="str">'zen-colors'</span>
+              </div>
             </div>
           </div>
 
           <div className="get-started-step">
             <div className="step-number">3</div>
-            <h3>Render</h3>
-            <div className="code-block">
-              <span className="punct">{'<'}</span>
-              <span className="comp">ZenColors</span>
-              {'\n  '}
-              <span className="prop">width</span>
-              <span className="punct">=</span>
-              <span className="str">"100%"</span>
-              {'\n  '}
-              <span className="prop">height</span>
-              <span className="punct">={'{'}</span>
-              <span className="num">400</span>
-              <span className="punct">{'}'}</span>
-              {'\n  {'}
-              <span className="punct">...</span>
-              <span className="prop">presets</span>
-              <span className="punct">.</span>
-              {'ember}\n'}
-              <span className="punct">{'/>'}</span>
+            <div className="step-content">
+              <h3>Render</h3>
+              <div className="code-block">
+                <span className="punct">{'<'}</span>
+                <span className="comp">ZenColors</span>
+                {'\n  '}
+                <span className="prop">width</span>
+                <span className="punct">=</span>
+                <span className="str">"100%"</span>
+                {'\n  '}
+                <span className="prop">height</span>
+                <span className="punct">={'{'}</span>
+                <span className="num">400</span>
+                <span className="punct">{'}'}</span>
+                {'\n  {'}
+                <span className="punct">...</span>
+                <span className="prop">presets</span>
+                <span className="punct">.</span>
+                {'ember}\n'}
+                <span className="punct">{'/>'}</span>
+              </div>
             </div>
           </div>
         </div>

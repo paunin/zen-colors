@@ -188,7 +188,14 @@ const DEFAULT_BLOB_STATE_TEXTURE = {
   textureRotation: 0,
   textureWidth: 0,
   textureHeight: 0,
+  interactionOffsetX: 0,
+  interactionOffsetY: 0,
 };
+
+function initialOpacity(op: number | [number, number] | undefined): number {
+  if (Array.isArray(op)) return op[0];
+  return op ?? 1;
+}
 
 /** Initialize runtime blob states from configs */
 export function initBlobStates(blobs: BlobConfig[]): BlobState[] {
@@ -197,7 +204,7 @@ export function initBlobStates(blobs: BlobConfig[]): BlobState[] {
     currentX: config.x,
     currentY: config.y,
     currentSize: config.size,
-    currentOpacity: config.opacity ?? 1,
+    currentOpacity: initialOpacity(config.opacity),
     phase: config.animation?.phase ?? 0,
     noiseOffsetX: i * 73.7,
     noiseOffsetY: i * 31.3,
@@ -221,7 +228,7 @@ export function syncBlobStates(
         currentX: config.x,
         currentY: config.y,
         currentSize: config.size,
-        currentOpacity: config.opacity ?? 1,
+        currentOpacity: initialOpacity(config.opacity),
       };
     }
     return {
@@ -229,7 +236,7 @@ export function syncBlobStates(
       currentX: config.x,
       currentY: config.y,
       currentSize: config.size,
-      currentOpacity: config.opacity ?? 1,
+      currentOpacity: initialOpacity(config.opacity),
       phase: config.animation?.phase ?? 0,
       noiseOffsetX: i * 73.7,
       noiseOffsetY: i * 31.3,
@@ -298,11 +305,21 @@ export function renderFrame(params: RenderParams): void {
     blob.currentX = blob.config.x + anim.dx;
     blob.currentY = blob.config.y + anim.dy;
     blob.currentSize = Math.max(1, blob.config.size + anim.dSize);
-    blob.currentOpacity = clamp(
-      (blob.config.opacity ?? 1) + anim.dOpacity,
-      0,
-      1
-    );
+    const opCfg = blob.config.opacity ?? 1;
+    if (Array.isArray(opCfg)) {
+      const [minO, maxO] = opCfg;
+      const opDur = blob.config.opacityDuration ?? 10;
+      const opFreq = (Math.PI * 2) / opDur;
+      const raw = Math.sin(adjustedTime * opFreq + blob.phase);
+      const n = (raw + 1) / 2;
+      const smooth = n * n * (3 - 2 * n);
+      blob.currentOpacity = clamp(minO + (maxO - minO) * smooth + anim.dOpacity, 0, 1);
+    } else {
+      blob.currentOpacity = clamp(opCfg + anim.dOpacity, 0, 1);
+    }
+
+    let targetOffsetX = 0;
+    let targetOffsetY = 0;
 
     if (interactive && mouseX != null && mouseY != null) {
       const bx = (blob.currentX / 100) * w;
@@ -313,10 +330,20 @@ export function renderFrame(params: RenderParams): void {
       const radius = (blob.currentSize / 100) * minDim;
       if (dist < radius * 1.5 && dist > 0) {
         const force = ((1 - dist / (radius * 1.5)) * interactionStrength) / 100;
-        blob.currentX += (dx / dist) * force * 20;
-        blob.currentY += (dy / dist) * force * 20;
+        targetOffsetX = (dx / dist) * force * 20;
+        targetOffsetY = (dy / dist) * force * 20;
       }
     }
+
+    const offsetLerp = 0.04;
+    blob.interactionOffsetX += (targetOffsetX - blob.interactionOffsetX) * offsetLerp;
+    blob.interactionOffsetY += (targetOffsetY - blob.interactionOffsetY) * offsetLerp;
+
+    if (Math.abs(blob.interactionOffsetX) < 0.001) blob.interactionOffsetX = 0;
+    if (Math.abs(blob.interactionOffsetY) < 0.001) blob.interactionOffsetY = 0;
+
+    blob.currentX += blob.interactionOffsetX;
+    blob.currentY += blob.interactionOffsetY;
 
     const radius = (blob.currentSize / 100) * minDim;
     const drawRadius = Math.max(1, Math.round(radius));
@@ -334,11 +361,14 @@ export function renderFrame(params: RenderParams): void {
       blob.textureHeight = result.height;
     }
 
-    const px = (blob.currentX / 100) * w - blob.textureWidth / 2;
-    const py = (blob.currentY / 100) * h - blob.textureHeight / 2;
+    const scale = blob.textureSize > 0 ? drawRadius / blob.textureSize : 1;
+    const drawW = blob.textureWidth * scale;
+    const drawH = blob.textureHeight * scale;
+    const px = (blob.currentX / 100) * w - drawW / 2;
+    const py = (blob.currentY / 100) * h - drawH / 2;
 
     ctx.globalAlpha = blob.currentOpacity;
-    ctx.drawImage(blob.texture!, px, py, blob.textureWidth, blob.textureHeight);
+    ctx.drawImage(blob.texture!, px, py, drawW, drawH);
   }
 
   ctx.globalAlpha = 1;

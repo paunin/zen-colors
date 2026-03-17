@@ -1,6 +1,8 @@
 import type { AnimationConfig, BlobState, EasingType } from './types';
 import { degToRad, noise2D } from './utils';
 
+const TWO_PI = Math.PI * 2;
+
 /** Apply easing to a normalized sine value */
 function applyEasing(t: number, easing: EasingType): number {
   switch (easing) {
@@ -47,12 +49,15 @@ export function computeAnimation(
   const range = animation.range ?? 20;
   const phase = degToRad(animation.phase ?? 0);
   const easing = animation.easing ?? 'sine';
+  const dur = animation.duration;
   const t = time * speed;
 
   switch (animation.type) {
     case 'drift': {
-      const rawX = Math.sin(t * 0.4 + phase);
-      const rawY = Math.cos(t * 0.3 + phase + 0.7);
+      const freqX = dur != null ? TWO_PI / dur : 0.4;
+      const freqY = dur != null ? TWO_PI / dur * 0.75 : 0.3;
+      const rawX = Math.sin(t * freqX + phase);
+      const rawY = Math.cos(t * freqY + phase + 0.7);
       return {
         dx: applyEasing(rawX, easing) * range,
         dy: applyEasing(rawY, easing) * range,
@@ -62,8 +67,12 @@ export function computeAnimation(
     }
 
     case 'pulse': {
-      const raw = Math.sin(t * 0.8 + phase);
-      const sizeChange = applyEasing(raw, easing) * range * 0.5;
+      const freq = dur != null ? TWO_PI / dur : 0.35;
+      const raw = Math.sin(t * freq + phase);
+      const n = (raw + 1) / 2;
+      const smooth = n * n * (3 - 2 * n);
+      const mapped = smooth * 2 - 1;
+      const sizeChange = applyEasing(mapped, easing) * range * 0.5;
       return {
         dx: 0,
         dy: 0,
@@ -73,7 +82,8 @@ export function computeAnimation(
     }
 
     case 'orbit': {
-      const angle = t * 0.5 + phase;
+      const freq = dur != null ? TWO_PI / dur : 0.5;
+      const angle = t * freq + phase;
       return {
         dx: Math.cos(angle) * range,
         dy: Math.sin(angle) * range,
@@ -83,18 +93,28 @@ export function computeAnimation(
     }
 
     case 'breathe': {
-      const rawSize = Math.sin(t * 0.5 + phase);
-      const rawOpacity = Math.sin(t * 0.5 + phase + Math.PI * 0.25);
+      const freq = dur != null ? TWO_PI / dur : 0.5;
+      const rawSize = Math.sin(t * freq + phase);
+      const nS = (rawSize + 1) / 2;
+      const smoothS = nS * nS * (3 - 2 * nS);
+      const mappedSize = smoothS * 2 - 1;
+
+      const rawOp = Math.sin(t * freq + phase + Math.PI * 0.25);
+      const nO = (rawOp + 1) / 2;
+      const smoothO = nO * nO * (3 - 2 * nO);
+      const mappedOp = smoothO * 2 - 1;
+
       return {
         dx: 0,
         dy: 0,
-        dSize: applyEasing(rawSize, easing) * range * 0.4,
-        dOpacity: applyEasing(rawOpacity, easing) * 0.3,
+        dSize: applyEasing(mappedSize, easing) * range * 0.4,
+        dOpacity: applyEasing(mappedOp, easing) * 0.3,
       };
     }
 
     case 'wander': {
-      const noiseScale = 0.15 * speed;
+      const noiseFreq = dur != null ? 1 / dur : 0.15;
+      const noiseScale = noiseFreq * speed;
       const nx = noise2D(
         blob.noiseOffsetX + t * noiseScale,
         blob.noiseOffsetY

@@ -99,22 +99,24 @@ Available presets: `ember`, `amber`, `glacier`, `subtle`, `aurora`, `sunset`, `o
 | `x`         | `number`          | —       | Horizontal position (0–100% of container)      |
 | `y`         | `number`          | —       | Vertical position (0–100% of container)        |
 | `size`      | `number`          | —       | Radius as % of min(width, height)              |
-| `opacity`   | `number`          | `1`        | Blob opacity (0–1)                             |
-| `shape`     | `BlobShape`       | `'circle'` | Blob shape — see shape types below             |
-| `scaleX`    | `number`          | `1`        | Horizontal stretch (ellipse/beam)              |
-| `scaleY`    | `number`          | `1`        | Vertical stretch (ellipse/beam)                |
-| `rotation`  | `number`          | `0`        | Rotation in degrees (0–360)                    |
-| `animation` | `AnimationConfig` | —          | Animation settings for this blob               |
+| `opacity`         | `number \| [min, max]` | `1`        | Fixed opacity (0–1) or a range that oscillates over `opacityDuration` |
+| `opacityDuration` | `number`               | `10`       | Seconds for one full opacity oscillation (only used when `opacity` is a range) |
+| `shape`           | `BlobShape`            | `'circle'` | Blob shape — see shape types below             |
+| `scaleX`          | `number`               | `1`        | Horizontal stretch (ellipse/beam)              |
+| `scaleY`          | `number`               | `1`        | Vertical stretch (ellipse/beam)                |
+| `rotation`        | `number`               | `0`        | Rotation in degrees (0–360)                    |
+| `animation`       | `AnimationConfig`      | —          | Animation settings for this blob               |
 
 ### `AnimationConfig`
 
-| Property | Type             | Default  | Description                        |
-| -------- | ---------------- | -------- | ---------------------------------- |
-| `type`   | `AnimationType`  | —        | Animation movement type            |
-| `speed`  | `number`         | `1`      | Per-blob speed multiplier          |
-| `range`  | `number`         | `20`     | Movement amplitude (% of container)|
-| `phase`  | `number`         | `0`      | Starting phase offset (0–360 deg)  |
-| `easing` | `EasingType`     | `'sine'` | Easing function                    |
+| Property   | Type             | Default  | Description                                            |
+| ---------- | ---------------- | -------- | ------------------------------------------------------ |
+| `type`     | `AnimationType`  | —        | Animation movement type                                |
+| `speed`    | `number`         | `1`      | Per-blob speed multiplier                              |
+| `range`    | `number`         | `20`     | Movement amplitude (% of container)                    |
+| `phase`    | `number`         | `0`      | Starting phase offset (0–360 deg)                      |
+| `easing`   | `EasingType`     | `'sine'` | Easing function                                        |
+| `duration` | `number`         | —        | Full cycle time in seconds (overrides default frequency for every animation type) |
 
 ### Blob Shapes
 
@@ -187,7 +189,9 @@ Available presets: `ember`, `amber`, `glacier`, `subtle`, `aurora`, `sunset`, `o
       x: 30,
       y: 50,
       size: 40,
-      animation: { type: 'orbit', speed: 0.3, range: 15 },
+      opacity: [0.6, 0.9],
+      opacityDuration: 12,
+      animation: { type: 'orbit', speed: 0.3, range: 15, duration: 20 },
     },
     {
       color: '#ff0088',
@@ -202,7 +206,7 @@ Available presets: `ember`, `amber`, `glacier`, `subtle`, `aurora`, `sunset`, `o
       x: 50,
       y: 70,
       size: 30,
-      animation: { type: 'breathe', speed: 0.4, range: 10, phase: 120 },
+      animation: { type: 'breathe', speed: 0.4, range: 10, phase: 120, duration: 16 },
     },
   ]}
 />

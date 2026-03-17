@@ -33,6 +33,8 @@ export interface AnimationConfig {
   phase?: number;
   /** Easing function for the animation (default: 'sine') */
   easing?: EasingType;
+  /** Full cycle duration in seconds. Overrides the default frequency for every animation type. */
+  duration?: number;
 }
 
 export interface BlobConfig {
@@ -46,8 +48,10 @@ export interface BlobConfig {
   y: number;
   /** Blob radius as percentage of min(container width, height). Typical range: 10-80 */
   size: number;
-  /** Blob opacity 0-1 (default: 1) */
-  opacity?: number;
+  /** Blob opacity: a single value 0-1 or a [min, max] range that oscillates over opacityDuration (default: 1) */
+  opacity?: number | [number, number];
+  /** Duration in seconds for one full opacity oscillation when opacity is a range (default: 10) */
+  opacityDuration?: number;
   /** Blob shape (default: 'circle') */
   shape?: BlobShape;
   /** Horizontal scale factor for ellipse/beam shapes (default: 1) */
@@ -113,6 +117,9 @@ export interface BlobState {
   /** Actual pixel dimensions of the cached texture */
   textureWidth: number;
   textureHeight: number;
+  /** Persistent interaction offset that lerps smoothly */
+  interactionOffsetX: number;
+  interactionOffsetY: number;
 }
 
 /** A complete preset: partial ZenColorsProps with blobs pre-configured */
