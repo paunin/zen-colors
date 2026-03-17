@@ -4,7 +4,7 @@ import {
   useCallback,
   type CSSProperties,
 } from 'react';
-import type { FluidColorsProps, BlobState } from './types';
+import type { ZenColorsProps, BlobState } from './types';
 import { initBlobStates, syncBlobStates, renderFrame } from './canvas-renderer';
 
 const DEFAULT_BLUR = 60;
@@ -14,7 +14,7 @@ const DEFAULT_SPEED = 1;
 const DEFAULT_RESOLUTION = 1;
 const DEFAULT_INTERACTION_STRENGTH = 30;
 
-export function FluidColors({
+export function ZenColors({
   width = '100%',
   height = '100%',
   className,
@@ -30,13 +30,17 @@ export function FluidColors({
   resolution = DEFAULT_RESOLUTION,
   overflowPadding,
   children,
-}: FluidColorsProps) {
+}: ZenColorsProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const blobStatesRef = useRef<BlobState[]>([]);
   const rafIdRef = useRef<number>(0);
   const startTimeRef = useRef<number>(0);
   const mouseRef = useRef<{ x: number | null; y: number | null }>({
+    x: null,
+    y: null,
+  });
+  const smoothMouseRef = useRef<{ x: number | null; y: number | null }>({
     x: null,
     y: null,
   });
@@ -79,9 +83,21 @@ export function FluidColors({
 
     startTimeRef.current = performance.now();
 
+    const MOUSE_LERP = 0.04;
+
     const tick = () => {
       if (!paused) {
         resizeCanvas();
+
+        const raw = mouseRef.current;
+        const sm = smoothMouseRef.current;
+        if (raw.x != null && raw.y != null) {
+          sm.x = sm.x == null ? raw.x : sm.x + (raw.x - sm.x) * MOUSE_LERP;
+          sm.y = sm.y == null ? raw.y : sm.y + (raw.y - sm.y) * MOUSE_LERP;
+        } else {
+          sm.x = null;
+          sm.y = null;
+        }
 
         const canvas = canvasRef.current;
         if (canvas) {
@@ -94,8 +110,8 @@ export function FluidColors({
             blendMode,
             background,
             resolution,
-            mouseX: mouseRef.current.x,
-            mouseY: mouseRef.current.y,
+            mouseX: sm.x,
+            mouseY: sm.y,
             interactive,
             interactionStrength,
           });

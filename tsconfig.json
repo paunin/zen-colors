@@ -20,7 +20,7 @@
     "declarationMap": true,
     "sourceMap": true,
     "paths": {
-      "fluid-colors": ["./lib/index.ts"]
+      "zen-colors": ["./lib/index.ts"]
     }
   },
   "include": ["lib", "src"]

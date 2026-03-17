@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
-import { FluidColors, presets } from 'fluid-colors';
-import type { BlobConfig, BlobShape, AnimationType, PresetName } from 'fluid-colors';
+import { ZenColors, presets } from 'zen-colors';
+import type { BlobConfig, BlobShape, AnimationType, PresetName } from 'zen-colors';
 
 const PRESET_DESCRIPTIONS: Record<PresetName, string> = {
   ember: 'Red and purple tones for creative energy',
@@ -49,7 +49,6 @@ export function App() {
   const [selectedPreset, setSelectedPreset] = useState<PresetName>('ember');
   const [shape, setShape] = useState<BlobShape>('ellipse');
   const [interactive, setInteractive] = useState(true);
-  const [paused, setPaused] = useState(false);
 
   const playgroundBlobs = useMemo<BlobConfig[]>(() => {
     const colors = ['#ff0055', '#8800ff', '#0066ff', '#00cc88', '#ff8800'];
@@ -104,11 +103,44 @@ export function App() {
     }
   }, []);
 
+  const randomizeBlobs = useCallback(() => {
+    const shapes: BlobShape[] = ['circle', 'ellipse', 'beam', 'ring', 'triangle', 'scalene', 'square', 'pentagon'];
+    const anims: AnimationType[] = ['drift', 'breathe', 'wander', 'orbit', 'pulse'];
+    const count = 2 + Math.floor(Math.random() * 4);
+    const rand = (min: number, max: number) => min + Math.random() * (max - min);
+    const randHex = () => '#' + Array.from({ length: 6 }, () => '0123456789abcdef'[Math.floor(Math.random() * 16)]).join('');
+    const blobs: BlobConfig[] = Array.from({ length: count }, (_, i) => {
+      const s = shapes[Math.floor(Math.random() * shapes.length)] ?? 'circle';
+      return {
+        id: `rand-${i}`,
+        color: randHex(),
+        x: Math.round(rand(15, 85)),
+        y: Math.round(rand(20, 80)),
+        size: Math.round(rand(15, 50)),
+        opacity: Math.round(rand(0.5, 1) * 100) / 100,
+        shape: s,
+        scaleX: s === 'circle' || s === 'ring' ? 1 : Math.round(rand(0.6, 2.0) * 10) / 10,
+        scaleY: s === 'circle' || s === 'ring' ? 1 : Math.round(rand(0.5, 1.5) * 10) / 10,
+        rotation: s === 'circle' || s === 'ring' ? 0 : Math.round(rand(-60, 60)),
+        animation: {
+          type: anims[Math.floor(Math.random() * anims.length)] ?? ('drift' as const),
+          speed: Math.round(rand(0.2, 1.0) * 10) / 10,
+          range: Math.round(rand(5, 20)),
+          phase: Math.round(rand(0, 360)),
+        },
+      };
+    });
+    const json = JSON.stringify(blobs, null, 2);
+    setBlobsJson(json);
+    setLiveBlobs(blobs);
+    setJsonError(null);
+  }, []);
+
   return (
     <>
       {/* ===== Hero ===== */}
       <section className="hero">
-        <FluidColors
+        <ZenColors
           width="100%"
           height="100%"
           {...presets[selectedPreset]}
@@ -116,7 +148,7 @@ export function App() {
           style={{ position: 'absolute', inset: 0 }}
         />
         <div className="hero-content">
-          <h1>Fluid Colors</h1>
+          <h1>Zen Colors</h1>
           <p>
             A React component for beautiful animated gradient
             blobs. Powered by Canvas&nbsp;2D with GPU-accelerated blur.
@@ -144,7 +176,10 @@ export function App() {
             <button
               key={name}
               className="preset-card"
-              onClick={() => setSelectedPreset(name)}
+              onClick={() => {
+                setSelectedPreset(name);
+                document.querySelector('.hero')?.scrollIntoView({ behavior: 'smooth' });
+              }}
               style={{
                 cursor: 'pointer',
                 textAlign: 'left',
@@ -157,7 +192,7 @@ export function App() {
               }}
             >
               <div className="preset-preview">
-                <FluidColors
+                <ZenColors
                   width="100%"
                   height="100%"
                   {...presets[name]}
@@ -209,12 +244,12 @@ export function App() {
 
         <div className="code-block">
           <span className="kw">import</span>
-          {' { FluidColors, presets } '}
+          {' { ZenColors, presets } '}
           <span className="kw">from</span>{' '}
-          <span className="str">'fluid-colors'</span>
+          <span className="str">'zen-colors'</span>
           {'\n\n'}
           <span className="punct">{'<'}</span>
-          <span className="comp">FluidColors</span>
+          <span className="comp">ZenColors</span>
           {' {'}
           <span className="punct">...</span>
           <span className="prop">presets</span>
@@ -226,7 +261,7 @@ export function App() {
       </section>
 
       {/* ===== Animation Showcase ===== */}
-      <section className="section" id="animations">
+      <section className="section" id="animations" style={{ paddingBottom: '3rem' }}>
         <h2>Animations</h2>
         <p className="subtitle">
           Five animation types control how blobs move, scale, and breathe.
@@ -235,7 +270,7 @@ export function App() {
           {ANIMATION_TYPES.map((type) => (
             <div key={type} className="animation-card">
               <div className="animation-preview">
-                <FluidColors
+                <ZenColors
                   width="100%"
                   height="100%"
                   background="#111118"
@@ -257,7 +292,7 @@ export function App() {
         </p>
         <div className="playground-layout">
           <div className="playground-preview">
-            <FluidColors
+            <ZenColors
               width="100%"
               height="100%"
               background="#0a0a10"
@@ -266,7 +301,6 @@ export function App() {
               blobs={liveBlobs}
               interactive={interactive}
               interactionStrength={40}
-              paused={paused}
             />
           </div>
 
@@ -339,21 +373,14 @@ export function App() {
               </select>
             </div>
 
-            <div className="control-group">
-              <label>Paused</label>
-              <select
-                value={paused ? 'on' : 'off'}
-                onChange={(e) => setPaused(e.target.value === 'on')}
-              >
-                <option value="on">Yes</option>
-                <option value="off">No</option>
-              </select>
-            </div>
           </div>
         </div>
 
         <div className="playground-editor">
-          <label className="editor-label">Blob Configuration (JSON)</label>
+          <div className="editor-header">
+            <label className="editor-label">Blob Configuration (JSON)</label>
+            <button className="random-btn" onClick={randomizeBlobs}>Random</button>
+          </div>
           <textarea
             className="blob-textarea"
             value={blobsJson}
@@ -365,7 +392,7 @@ export function App() {
       </section>
 
       <footer className="footer">
-        Fluid Colors &middot; MIT License
+        Zen Colors &middot; MIT License
       </footer>
     </>
   );

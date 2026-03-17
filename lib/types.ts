@@ -60,7 +60,7 @@ export interface BlobConfig {
   animation?: AnimationConfig;
 }
 
-export interface FluidColorsProps {
+export interface ZenColorsProps {
   /** Width of the container. CSS value or number in px (default: '100%') */
   width?: string | number;
   /** Height of the container. CSS value or number in px (default: '100%') */
@@ -115,5 +115,5 @@ export interface BlobState {
   textureHeight: number;
 }
 
-/** A complete preset: partial FluidColorsProps with blobs pre-configured */
-export type FluidColorsPreset = Omit<FluidColorsProps, 'children' | 'className' | 'style' | 'width' | 'height'>;
+/** A complete preset: partial ZenColorsProps with blobs pre-configured */
+export type ZenColorsPreset = Omit<ZenColorsProps, 'children' | 'className' | 'style' | 'width' | 'height'>;

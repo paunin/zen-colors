@@ -13,8 +13,8 @@ export default defineConfig(({ mode }) => {
       build: {
         lib: {
           entry: resolve(__dirname, 'lib/index.ts'),
-          name: 'FluidColors',
-          fileName: 'fluid-colors',
+          name: 'ZenColors',
+          fileName: 'zen-colors',
         },
         rollupOptions: {
           external: ['react', 'react-dom', 'react/jsx-runtime'],
@@ -34,7 +34,7 @@ export default defineConfig(({ mode }) => {
     plugins: [react()],
     resolve: {
       alias: {
-        'fluid-colors': resolve(__dirname, 'lib/index.ts'),
+        'zen-colors': resolve(__dirname, 'lib/index.ts'),
       },
     },
   };

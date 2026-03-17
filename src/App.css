@@ -55,14 +55,16 @@ body {
   letter-spacing: -0.03em;
   line-height: 1.1;
   margin-bottom: 1rem;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.6);
 }
 
 .hero p {
   font-size: clamp(1rem, 2vw, 1.25rem);
-  color: var(--color-text-dim);
+  color: #ffffff;
   max-width: 520px;
   margin: 0 auto 2rem;
   line-height: 1.6;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.6);
 }
 
 .hero-nav {
@@ -166,8 +168,14 @@ body {
 
 .animation-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+}
+
+@media (max-width: 900px) {
+  .animation-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  }
 }
 
 .animation-card {
@@ -178,11 +186,11 @@ body {
 }
 
 .animation-preview {
-  height: 180px;
+  height: 140px;
 }
 
 .animation-label {
-  padding: 0.75rem 1rem;
+  padding: 0.5rem 0.75rem;
   font-size: 0.95rem;
   font-weight: 500;
   text-transform: capitalize;
@@ -288,12 +296,34 @@ body {
   margin-top: 2rem;
 }
 
+.editor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
 .editor-label {
-  display: block;
   font-size: 0.85rem;
   font-weight: 500;
   color: var(--color-text-dim);
-  margin-bottom: 0.5rem;
+}
+
+.random-btn {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  padding: 0.35rem 0.9rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.random-btn:hover {
+  background: var(--color-surface-hover);
+  border-color: var(--color-accent);
 }
 
 .blob-textarea {

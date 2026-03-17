@@ -1,16 +1,16 @@
 {
-  "name": "fluid-colors",
+  "name": "zen-colors",
   "version": "1.0.0",
-  "description": "A comprehensive React component for rendering animated fluid color gradients with Canvas 2D",
+  "description": "A comprehensive React component for rendering animated zen color gradients with Canvas 2D",
   "type": "module",
-  "main": "./dist/fluid-colors.umd.cjs",
-  "module": "./dist/fluid-colors.js",
+  "main": "./dist/zen-colors.umd.cjs",
+  "module": "./dist/zen-colors.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/fluid-colors.js",
-      "require": "./dist/fluid-colors.umd.cjs"
+      "import": "./dist/zen-colors.js",
+      "require": "./dist/zen-colors.umd.cjs"
     }
   },
   "files": [
@@ -39,7 +39,7 @@
   },
   "keywords": [
     "react",
-    "fluid",
+    "zen",
     "colors",
     "gradient",
     "animation",
@@ -50,6 +50,6 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-org/fluid-colors"
+    "url": "https://github.com/paunin/zen-colors"
   }
 }

@@ -1,7 +1,7 @@
-import type { FluidColorsPreset } from './types';
+import type { ZenColorsPreset } from './types';
 
-/** Red/crimson + purple fluid colors */
-export const ember: FluidColorsPreset = {
+/** Red/crimson + purple zen colors */
+export const ember: ZenColorsPreset = {
   background: '#0a0a0a',
   blur: 80,
   blendMode: 'lighter',
@@ -60,7 +60,7 @@ export const ember: FluidColorsPreset = {
 };
 
 /** Amber/orange warm tones */
-export const amber: FluidColorsPreset = {
+export const amber: ZenColorsPreset = {
   background: '#0a0a0a',
   blur: 80,
   blendMode: 'lighter',
@@ -117,8 +117,8 @@ export const amber: FluidColorsPreset = {
   ],
 };
 
-/** Blue/cyan fluid colors */
-export const glacier: FluidColorsPreset = {
+/** Blue/cyan zen colors */
+export const glacier: ZenColorsPreset = {
   background: '#050510',
   blur: 80,
   blendMode: 'lighter',
@@ -176,7 +176,7 @@ export const glacier: FluidColorsPreset = {
 };
 
 /** Muted amber + magenta */
-export const subtle: FluidColorsPreset = {
+export const subtle: ZenColorsPreset = {
   background: '#0c0c10',
   blur: 100,
   blendMode: 'lighter',
@@ -218,7 +218,7 @@ export const subtle: FluidColorsPreset = {
 };
 
 /** Green/teal/purple northern lights */
-export const aurora: FluidColorsPreset = {
+export const aurora: ZenColorsPreset = {
   background: '#050510',
   blur: 90,
   blendMode: 'lighter',
@@ -279,7 +279,7 @@ export const aurora: FluidColorsPreset = {
 };
 
 /** Orange/pink/purple sunset */
-export const sunset: FluidColorsPreset = {
+export const sunset: ZenColorsPreset = {
   background: '#0a0508',
   blur: 85,
   blendMode: 'lighter',
@@ -340,7 +340,7 @@ export const sunset: FluidColorsPreset = {
 };
 
 /** Deep blue/teal/cyan ocean */
-export const ocean: FluidColorsPreset = {
+export const ocean: ZenColorsPreset = {
   background: '#020810',
   blur: 90,
   blendMode: 'lighter',
@@ -390,7 +390,7 @@ export const ocean: FluidColorsPreset = {
 };
 
 /** Bright vibrant neon multi-color */
-export const neon: FluidColorsPreset = {
+export const neon: ZenColorsPreset = {
   background: '#050505',
   blur: 70,
   blendMode: 'lighter',

@@ -1,21 +1,21 @@
-# Fluid Colors
+# Zen Colors
 
-A React component for rendering beautiful animated fluid color gradients. Powered by Canvas 2D with GPU-accelerated CSS blur for high performance.
+A React component for rendering beautiful animated color gradients. Powered by Canvas 2D with GPU-accelerated CSS blur for high performance.
 
 ## Installation
 
 ```bash
-npm install fluid-colors
+npm install zen-colors
 ```
 
 ## Quick Start
 
 ```tsx
-import { FluidColors } from 'fluid-colors';
+import { ZenColors } from 'zen-colors';
 
 function App() {
   return (
-    <FluidColors
+    <ZenColors
       width="100%"
       height={400}
       background="#0a0a0a"
@@ -46,11 +46,11 @@ function App() {
 Eight built-in presets are included for common color palettes:
 
 ```tsx
-import { FluidColors, presets } from 'fluid-colors';
+import { ZenColors, presets } from 'zen-colors';
 
 // Spread a preset directly onto the component
-<FluidColors width="100%" height={400} {...presets.ember} />
-<FluidColors width="100%" height={400} {...presets.sunset} />
+<ZenColors width="100%" height={400} {...presets.ember} />
+<ZenColors width="100%" height={400} {...presets.sunset} />
 ```
 
 Available presets: `ember`, `amber`, `glacier`, `subtle`, `aurora`, `sunset`, `ocean`, `neon`.
@@ -68,7 +68,7 @@ Available presets: `ember`, `amber`, `glacier`, `subtle`, `aurora`, `sunset`, `o
 
 ## Component API
 
-### `<FluidColors />`
+### `<ZenColors />`
 
 | Prop                  | Type                        | Default      | Description                                               |
 | --------------------- | --------------------------- | ------------ | --------------------------------------------------------- |
@@ -143,7 +143,7 @@ Available presets: `ember`, `amber`, `glacier`, `subtle`, `aurora`, `sunset`, `o
 ### Full-Page Background
 
 ```tsx
-<FluidColors
+<ZenColors
   width="100vw"
   height="100vh"
   style={{ position: 'fixed', top: 0, left: 0, zIndex: -1 }}
@@ -151,16 +151,16 @@ Available presets: `ember`, `amber`, `glacier`, `subtle`, `aurora`, `sunset`, `o
 >
   <div style={{ padding: '4rem', color: '#fff' }}>
     <h1>My App</h1>
-    <p>Content renders on top of the fluid background.</p>
+    <p>Content renders on top of the zen background.</p>
   </div>
-</FluidColors>
+</ZenColors>
 ```
 
 ### Card Header Accent
 
 ```tsx
 <div style={{ borderRadius: 12, overflow: 'hidden' }}>
-  <FluidColors width="100%" height={140} {...presets.sunset} blur={50} />
+  <ZenColors width="100%" height={140} {...presets.sunset} blur={50} />
   <div style={{ padding: '1rem' }}>
     <h3>Card Title</h3>
     <p>Card content goes here.</p>
@@ -171,7 +171,7 @@ Available presets: `ember`, `amber`, `glacier`, `subtle`, `aurora`, `sunset`, `o
 ### Custom Configuration
 
 ```tsx
-<FluidColors
+<ZenColors
   width={600}
   height={400}
   background="#050510"
@@ -209,7 +209,7 @@ Available presets: `ember`, `amber`, `glacier`, `subtle`, `aurora`, `sunset`, `o
 ### Reduced Motion / Static
 
 ```tsx
-<FluidColors
+<ZenColors
   width="100%"
   height={300}
   paused
@@ -224,7 +224,7 @@ Available presets: `ember`, `amber`, `glacier`, `subtle`, `aurora`, `sunset`, `o
 ### Low-Resolution for Performance
 
 ```tsx
-<FluidColors
+<ZenColors
   width="100%"
   height={400}
   resolution={0.5}
@@ -246,16 +246,16 @@ All types are exported for full TypeScript support:
 
 ```tsx
 import type {
-  FluidColorsProps,
+  ZenColorsProps,
   BlobConfig,
   BlobShape,
   AnimationConfig,
   AnimationType,
   EasingType,
   BlendMode,
-  FluidColorsPreset,
+  ZenColorsPreset,
   PresetName,
-} from 'fluid-colors';
+} from 'zen-colors';
 ```
 
 ## Browser Support
