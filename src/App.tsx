@@ -205,7 +205,7 @@ export function App() {
           Click a preset to use it in the hero&nbsp;section.
         </p>
         <div className="preset-grid">
-          {(Object.keys(presets) as PresetName[]).map((name) => (
+          {(Object.keys(presets) as PresetName[]).filter((n) => n !== 'matrix').map((name) => (
             <button
               key={name}
               className="preset-card"
