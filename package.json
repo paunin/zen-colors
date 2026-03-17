@@ -1,6 +1,6 @@
 {
   "name": "zen-colors",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A comprehensive React component for rendering animated zen color gradients with Canvas 2D",
   "type": "module",
   "main": "./dist/zen-colors.umd.cjs",

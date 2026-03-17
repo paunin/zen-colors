@@ -353,6 +353,85 @@ body {
   font-family: var(--font-mono);
 }
 
+/* ---- Get Started ---- */
+
+.get-started-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+}
+
+@media (max-width: 800px) {
+  .get-started-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.get-started-step {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.get-started-step h3 {
+  font-size: 1.05rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.get-started-step .code-block {
+  margin-top: 0;
+  font-size: 0.8rem;
+}
+
+.step-number {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.get-started-links {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.repo-link {
+  display: inline-block;
+  padding: 0.65rem 1.5rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  background: var(--color-accent);
+  color: #fff;
+  transition: background 0.2s;
+}
+
+.repo-link:hover {
+  background: var(--color-accent-dim);
+}
+
+.repo-link.secondary {
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+
+.repo-link.secondary:hover {
+  background: var(--color-surface-hover);
+}
+
 /* ---- Footer ---- */
 
 .footer {
@@ -361,4 +440,13 @@ body {
   color: var(--color-text-dim);
   font-size: 0.9rem;
   border-top: 1px solid var(--color-border);
+}
+
+.footer a {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+.footer a:hover {
+  text-decoration: underline;
 }

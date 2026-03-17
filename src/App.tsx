@@ -391,8 +391,85 @@ export function App() {
         </div>
       </section>
 
+      {/* ===== Get Started ===== */}
+      <section className="section" id="get-started">
+        <h2>Use in Your Project</h2>
+        <p className="subtitle">
+          Install the package and drop the component into any React app.
+        </p>
+
+        <div className="get-started-grid">
+          <div className="get-started-step">
+            <div className="step-number">1</div>
+            <h3>Install</h3>
+            <div className="code-block">npm install zen-colors</div>
+          </div>
+
+          <div className="get-started-step">
+            <div className="step-number">2</div>
+            <h3>Import</h3>
+            <div className="code-block">
+              <span className="kw">import</span>
+              {' { ZenColors, presets } '}
+              <span className="kw">from</span>{' '}
+              <span className="str">'zen-colors'</span>
+            </div>
+          </div>
+
+          <div className="get-started-step">
+            <div className="step-number">3</div>
+            <h3>Render</h3>
+            <div className="code-block">
+              <span className="punct">{'<'}</span>
+              <span className="comp">ZenColors</span>
+              {'\n  '}
+              <span className="prop">width</span>
+              <span className="punct">=</span>
+              <span className="str">"100%"</span>
+              {'\n  '}
+              <span className="prop">height</span>
+              <span className="punct">={'{'}</span>
+              <span className="num">400</span>
+              <span className="punct">{'}'}</span>
+              {'\n  {'}
+              <span className="punct">...</span>
+              <span className="prop">presets</span>
+              <span className="punct">.</span>
+              {'ember}\n'}
+              <span className="punct">{'/>'}</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="get-started-links">
+          <a
+            href="https://github.com/paunin/zen-colors"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="repo-link"
+          >
+            GitHub Repository
+          </a>
+          <a
+            href="https://github.com/paunin/zen-colors#readme"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="repo-link secondary"
+          >
+            Full Documentation
+          </a>
+        </div>
+      </section>
+
       <footer className="footer">
-        Zen Colors &middot; MIT License
+        Zen Colors &middot; MIT License &middot;{' '}
+        <a
+          href="https://github.com/paunin/zen-colors"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          GitHub
+        </a>
       </footer>
     </>
   );
