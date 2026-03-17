@@ -2,6 +2,8 @@
 
 A React component for rendering beautiful animated color gradients. Powered by Canvas 2D with GPU-accelerated CSS blur for high performance.
 
+![Zen Colors](public/meta.png)
+
 ## Installation
 
 ```bash
