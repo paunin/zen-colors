@@ -1,6 +1,8 @@
-import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 import { ZenColors, presets } from 'zen-colors';
 import type { BlobConfig, BlobShape, AnimationType, PresetName } from 'zen-colors';
+import { usePlayground } from './hooks/usePlayground';
+import { JsonEditor } from './components/JsonEditor';
 
 const PRESET_DESCRIPTIONS: Record<PresetName, string> = {
   ember: 'Red and purple tones for creative energy',
@@ -57,122 +59,21 @@ function animationDemoBlobs(type: AnimationType): BlobConfig[] {
 }
 
 export function App() {
-  const [blur, setBlur] = useState(70);
-  const [speed, setSpeed] = useState(1);
-  const [blobCount, setBlobCount] = useState(3);
   const [selectedPreset, setSelectedPreset] = useState<PresetName>('ember');
-  const [shape, setShape] = useState<BlobShape>('ellipse');
-  const [interactive, setInteractive] = useState(true);
 
-  const playgroundBlobs = useMemo<BlobConfig[]>(() => {
-    const colors = ['#ff0055', '#8800ff', '#0066ff', '#00cc88', '#ff8800'];
-    const animTypes: AnimationType[] = ['drift', 'breathe', 'wander', 'orbit', 'pulse'];
-    const rotations = [0, -30, 45, -15, 60];
-    const scales: [number, number][] = [[1.5, 0.8], [1.3, 0.9], [1.8, 0.6], [1.2, 1.0], [1.6, 0.7]];
-    return Array.from({ length: blobCount }, (_, i) => {
-      const [sx, sy] = scales[i % 5] ?? [1, 1];
-      return {
-        id: `pg-${i}`,
-        color: colors[i % colors.length] ?? '#ff0055',
-        x: 25 + (i * 50) / Math.max(blobCount - 1, 1),
-        y: 35 + (i % 2 === 0 ? 0 : 30),
-        size: 30 - i * 3,
-        opacity: 0.85 - i * 0.05,
-        shape,
-        scaleX: shape === 'circle' || shape === 'ring' ? 1 : sx,
-        scaleY: shape === 'circle' || shape === 'ring' ? 1 : sy,
-        rotation: shape === 'circle' || shape === 'ring' ? 0 : (rotations[i % 5] ?? 0),
-        animation: {
-          type: animTypes[i % 5] ?? ('drift' as const),
-          speed: 0.5 + i * 0.1,
-          range: 12 + i * 2,
-          phase: i * 72,
-          duration: 14 + i * 2,
-        },
-      };
-    });
-  }, [blobCount, shape]);
-
-  const [liveBlobs, setLiveBlobs] = useState<BlobConfig[]>(playgroundBlobs);
-  const [blobsJson, setBlobsJson] = useState(() => JSON.stringify(playgroundBlobs, null, 2));
-  const [jsonError, setJsonError] = useState<string | null>(null);
-
-  useEffect(() => {
-    setLiveBlobs(playgroundBlobs);
-    setBlobsJson(JSON.stringify(playgroundBlobs, null, 2));
-    setJsonError(null);
-  }, [playgroundBlobs]);
-
-  const applyJson = useCallback(() => {
-    try {
-      const parsed: unknown = JSON.parse(blobsJson);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        setLiveBlobs(parsed as BlobConfig[]);
-        setJsonError(null);
-      } else {
-        setJsonError('Must be a non-empty array of blob configs');
-      }
-    } catch (err) {
-      setJsonError(err instanceof Error ? err.message : 'Invalid JSON');
-    }
-  }, [blobsJson]);
-
-  const randomizeBlobs = useCallback(() => {
-    const shapes: BlobShape[] = ['circle', 'ellipse', 'beam', 'ring', 'triangle', 'scalene', 'square', 'pentagon', 'poly'];
-    const anims: AnimationType[] = ['drift', 'breathe', 'wander', 'orbit', 'pulse'];
-    const count = 2 + Math.floor(Math.random() * 4);
-    const rand = (min: number, max: number) => min + Math.random() * (max - min);
-    const randNeon = () => {
-      const h = Math.floor(Math.random() * 360);
-      const s = 85 + Math.floor(Math.random() * 16);
-      const l = 50 + Math.floor(Math.random() * 16);
-      const hslToHex = (h: number, s: number, l: number) => {
-        const a = s / 100 * Math.min(l, 100 - l) / 100;
-        const f = (n: number) => {
-          const k = (n + h / 30) % 12;
-          const c = l / 100 - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
-          return Math.round(255 * c).toString(16).padStart(2, '0');
-        };
-        return `#${f(0)}${f(8)}${f(4)}`;
-      };
-      return hslToHex(h, s, l);
-    };
-    const blobs: BlobConfig[] = Array.from({ length: count }, (_, i) => {
-      const s = shapes[Math.floor(Math.random() * shapes.length)] ?? 'circle';
-      const useRange = Math.random() > 0.5;
-      const opMin = Math.round(rand(0.3, 0.6) * 100) / 100;
-      const opMax = Math.round(rand(0.7, 1.0) * 100) / 100;
-      return {
-        id: `rand-${i}`,
-        color: randNeon(),
-        x: Math.round(rand(15, 85)),
-        y: Math.round(rand(20, 80)),
-        size: Math.round(rand(15, 50)),
-        opacity: useRange ? [opMin, opMax] as [number, number] : Math.round(rand(0.5, 1) * 100) / 100,
-        ...(useRange ? { opacityDuration: Math.round(rand(6, 16)) } : {}),
-        shape: s,
-        ...(s === 'poly' ? {
-          corners: 3 + Math.floor(Math.random() * 8),
-          morphSpeed: Math.round(rand(0.1, 0.8) * 100) / 100,
-          morphRange: Math.round(rand(1.5, 4.0) * 10) / 10,
-        } : {}),
-        scaleX: s === 'circle' || s === 'ring' || s === 'poly' ? 1 : Math.round(rand(0.6, 2.0) * 10) / 10,
-        scaleY: s === 'circle' || s === 'ring' || s === 'poly' ? 1 : Math.round(rand(0.5, 1.5) * 10) / 10,
-        rotation: s === 'circle' || s === 'ring' ? 0 : Math.round(rand(-60, 60)),
-        animation: {
-          type: anims[Math.floor(Math.random() * anims.length)] ?? ('drift' as const),
-          speed: Math.round(rand(0.2, 1.0) * 10) / 10,
-          range: Math.round(rand(5, 20)),
-          phase: Math.round(rand(0, 360)),
-          duration: Math.round(rand(10, 25)),
-        },
-      };
-    });
-    const json = JSON.stringify(blobs, null, 2);
-    setBlobsJson(json);
-    setLiveBlobs(blobs);
-    setJsonError(null);
-  }, []);
+  const {
+    blur, setBlur,
+    speed, setSpeed,
+    blobCount, setBlobCount,
+    shape, setShape,
+    interactive, setInteractive,
+    sizeAdjust, setSizeAdjust,
+    scaledBlobs,
+    blobsJson, setBlobsJson,
+    jsonError,
+    applyJson,
+    randomizeBlobs,
+  } = usePlayground();
 
   return (
     <>
@@ -324,10 +225,15 @@ export function App() {
 
       {/* ===== Interactive Playground ===== */}
       <section className="section" id="playground">
-        <h2>Playground</h2>
-        <p className="subtitle">
-          Tweak parameters in real time. Move your mouse over the preview for interaction.
-        </p>
+        <div className="section-header-row">
+          <div>
+            <h2>Playground</h2>
+            <p className="subtitle">
+              Tweak parameters in real time. Move your mouse over the preview for interaction.
+            </p>
+          </div>
+          <a href="#/playground" className="fullscreen-link">Open Fullscreen</a>
+        </div>
         <div className="playground-layout">
           <div className="playground-preview">
             <ZenColors
@@ -336,7 +242,7 @@ export function App() {
               background="#0a0a10"
               blur={blur}
               speed={speed}
-              blobs={liveBlobs}
+              blobs={scaledBlobs}
               interactive={interactive}
               interactionStrength={40}
             />
@@ -384,6 +290,19 @@ export function App() {
             </div>
 
             <div className="control-group">
+              <label>
+                Size <span>{sizeAdjust > 0 ? '+' : ''}{sizeAdjust}%</span>
+              </label>
+              <input
+                type="range"
+                min={-100}
+                max={100}
+                value={sizeAdjust}
+                onChange={(e) => setSizeAdjust(Number(e.target.value))}
+              />
+            </div>
+
+            <div className="control-group">
               <label>Shape</label>
               <select
                 value={shape}
@@ -418,18 +337,17 @@ export function App() {
         <div className="playground-editor">
           <label className="editor-label">Blob Configuration (JSON)</label>
           <div className="editor-body">
-            <textarea
-              className="blob-textarea"
+            <JsonEditor
               value={blobsJson}
-              onChange={(e) => setBlobsJson(e.target.value)}
-              spellCheck={false}
+              onChange={setBlobsJson}
+              error={jsonError}
+              minHeight="200px"
             />
             <div className="editor-actions">
               <button className="apply-btn" onClick={applyJson}>Apply</button>
               <button className="random-btn" onClick={randomizeBlobs}>Random</button>
             </div>
           </div>
-          {jsonError && <div className="json-error">{jsonError}</div>}
         </div>
       </section>
 
