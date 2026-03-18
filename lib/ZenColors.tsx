@@ -27,6 +27,7 @@ export function ZenColors({
   paused = false,
   interactive = false,
   interactionStrength = DEFAULT_INTERACTION_STRENGTH,
+  targetFps = 15,
   resolution = DEFAULT_RESOLUTION,
   overflowPadding,
   children,
@@ -36,6 +37,7 @@ export function ZenColors({
   const blobStatesRef = useRef<BlobState[]>([]);
   const rafIdRef = useRef<number>(0);
   const startTimeRef = useRef<number>(0);
+  const lastFrameTimeRef = useRef<number>(0);
   const mouseRef = useRef<{ x: number | null; y: number | null }>({
     x: null,
     y: null,
@@ -85,8 +87,13 @@ export function ZenColors({
 
     const MOUSE_LERP = 0.04;
 
-    const tick = () => {
-      if (!paused) {
+    const frameInterval = 1000 / Math.max(0.01, targetFps);
+
+    const tick = (now: number) => {
+      const delta = now - lastFrameTimeRef.current;
+      if (!paused && delta >= frameInterval) {
+        lastFrameTimeRef.current = now - (delta % frameInterval);
+
         resizeCanvas();
 
         const raw = mouseRef.current;
@@ -120,9 +127,10 @@ export function ZenColors({
       rafIdRef.current = requestAnimationFrame(tick);
     };
 
+    lastFrameTimeRef.current = performance.now();
     rafIdRef.current = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafIdRef.current);
-  }, [paused, speed, blendMode, background, resolution, interactive, interactionStrength, resizeCanvas]);
+  }, [paused, speed, blendMode, background, resolution, interactive, interactionStrength, targetFps, resizeCanvas]);
 
   // ResizeObserver for responsive sizing
   useEffect(() => {

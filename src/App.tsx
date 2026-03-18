@@ -68,6 +68,7 @@ export function App() {
     shape, setShape,
     interactive, setInteractive,
     sizeAdjust, setSizeAdjust,
+    targetFps, setTargetFps,
     scaledBlobs,
     blobsJson, setBlobsJson,
     jsonError,
@@ -245,6 +246,7 @@ export function App() {
               blobs={scaledBlobs}
               interactive={interactive}
               interactionStrength={40}
+              targetFps={targetFps}
             />
           </div>
 
@@ -329,6 +331,20 @@ export function App() {
                 <option value="on">On</option>
                 <option value="off">Off</option>
               </select>
+            </div>
+
+            <div className="control-group">
+              <label>
+                FPS <span>{targetFps}</span>
+              </label>
+              <input
+                type="range"
+                min={0.5}
+                max={60}
+                step={0.5}
+                value={targetFps}
+                onChange={(e) => setTargetFps(Number(e.target.value))}
+              />
             </div>
 
           </div>

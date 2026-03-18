@@ -90,6 +90,7 @@ Available presets: `ember`, `amber`, `glacier`, `subtle`, `aurora`, `sunset`, `o
 | `paused`              | `boolean`                   | `false`      | Pause all animations                                       |
 | `interactive`         | `boolean`                   | `false`      | Blobs respond to mouse/touch                               |
 | `interactionStrength` | `number`                    | `30`         | Mouse interaction strength (0–100)                         |
+| `targetFps`           | `number`                    | `15`         | Target frames per second — limits canvas redraws. Supports fractional values (e.g. `0.5` = one frame every 2 s). Lower values save CPU/GPU |
 | `resolution`          | `number`                    | `1`          | Canvas scale factor (lower = better perf)                  |
 | `overflowPadding`     | `number`                    | `= blur`     | Extra padding to prevent blur clipping                     |
 | `children`            | `ReactNode`                 | —            | Content rendered on top of the canvas                      |

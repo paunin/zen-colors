@@ -96,6 +96,8 @@ export interface ZenColorsProps {
   interactive?: boolean;
   /** Strength of mouse interaction 0-100 (default: 30) */
   interactionStrength?: number;
+  /** Target frames per second. Supports fractional values (e.g. 0.5 = 1 frame every 2s). Lower values reduce CPU/GPU load (default: 15) */
+  targetFps?: number;
   /** Canvas resolution scale factor. Lower values improve performance (default: 1) */
   resolution?: number;
   /** Overflow padding in pixels to prevent blur clipping at edges (default: equals blur value) */

@@ -8,6 +8,7 @@ export function usePlayground() {
   const [shape, setShape] = useState<BlobShape>('ellipse');
   const [interactive, setInteractive] = useState(true);
   const [sizeAdjust, setSizeAdjust] = useState(0);
+  const [targetFps, setTargetFps] = useState(15);
 
   const playgroundBlobs = useMemo<BlobConfig[]>(() => {
     const minDim = Math.min(window.innerWidth, window.innerHeight);
@@ -162,6 +163,7 @@ export function usePlayground() {
     shape, setShape,
     interactive, setInteractive,
     sizeAdjust, setSizeAdjust,
+    targetFps, setTargetFps,
     scaledBlobs,
     blobsJson, setBlobsJson,
     jsonError,
