@@ -171,7 +171,7 @@ function createPolyTexture(
     const verts: { x: number; y: number }[] = [];
     for (let i = 0; i < n; i++) {
       const baseAngle = (Math.PI * 2 * i) / n - Math.PI / 2;
-      const noiseVal = noise2D(seed + i * 17.3, time * morphSpeed + i * 2.1);
+      const noiseVal = noise2D(seed + i * 17.3, time * morphSpeed * 0.1 + i * 2.1);
       const morph = 1 + noiseVal * halfAmp;
       const vr = radius * morph;
       verts.push({ x: Math.cos(baseAngle) * vr, y: Math.sin(baseAngle) * vr });
