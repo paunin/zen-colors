@@ -58,8 +58,52 @@ function animationDemoBlobs(type: AnimationType): BlobConfig[] {
   ];
 }
 
+function generateRandomHeroBlobs(): BlobConfig[] {
+  const shapes: BlobShape[] = ['circle', 'ellipse', 'beam', 'ring', 'triangle', 'scalene', 'square', 'pentagon', 'poly'];
+  const anims: AnimationType[] = ['drift', 'breathe', 'wander', 'orbit', 'pulse'];
+  const rand = (min: number, max: number) => min + Math.random() * (max - min);
+  const randNeon = () => {
+    const h = Math.floor(Math.random() * 360);
+    const s = 85 + Math.floor(Math.random() * 16);
+    const l = 50 + Math.floor(Math.random() * 16);
+    const a = s / 100 * Math.min(l, 100 - l) / 100;
+    const f = (n: number) => {
+      const k = (n + h / 30) % 12;
+      const c = l / 100 - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+      return Math.round(255 * c).toString(16).padStart(2, '0');
+    };
+    return `#${f(0)}${f(8)}${f(4)}`;
+  };
+  const count = 3 + Math.floor(Math.random() * 3);
+  return Array.from({ length: count }, (_, i) => {
+    const sh = shapes[Math.floor(Math.random() * shapes.length)] ?? 'circle';
+    return {
+      id: `hero-rand-${i}`,
+      color: randNeon(),
+      x: Math.round(rand(10, 90)),
+      y: Math.round(rand(10, 90)),
+      size: Math.round(rand(25, 55)),
+      opacity: [Math.round(rand(0.4, 0.6) * 100) / 100, Math.round(rand(0.7, 1) * 100) / 100] as [number, number],
+      opacityDuration: Math.round(rand(8, 16)),
+      shape: sh,
+      ...(sh === 'poly' ? { corners: 3 + Math.floor(Math.random() * 8), morphSpeed: Math.round(rand(0.1, 0.6) * 100) / 100, morphRange: Math.round(rand(1.5, 3.5) * 10) / 10 } : {}),
+      scaleX: sh === 'circle' || sh === 'ring' || sh === 'poly' ? 1 : Math.round(rand(0.7, 1.8) * 10) / 10,
+      scaleY: sh === 'circle' || sh === 'ring' || sh === 'poly' ? 1 : Math.round(rand(0.5, 1.3) * 10) / 10,
+      rotation: sh === 'circle' || sh === 'ring' ? 0 : Math.round(rand(-45, 45)),
+      animation: {
+        type: anims[Math.floor(Math.random() * anims.length)] ?? ('drift' as const),
+        speed: Math.round(rand(0.2, 0.7) * 10) / 10,
+        range: Math.round(rand(8, 22)),
+        phase: Math.round(rand(0, 360)),
+        duration: Math.round(rand(14, 28)),
+      },
+    };
+  });
+}
+
 export function App() {
-  const [selectedPreset, setSelectedPreset] = useState<PresetName>('ember');
+  const [selectedPreset, setSelectedPreset] = useState<PresetName | null>('ember');
+  const [customHeroBlobs, setCustomHeroBlobs] = useState<BlobConfig[] | null>(null);
 
   const {
     blur, setBlur,
@@ -83,7 +127,7 @@ export function App() {
         <ZenColors
           width="100%"
           height="100%"
-          {...presets[selectedPreset]}
+          {...(selectedPreset ? presets[selectedPreset] : { blobs: customHeroBlobs ?? presets.ember.blobs, background: '#0a0a10', blendMode: 'lighter' as const })}
           blur={90}
           style={{ position: 'absolute', inset: 0 }}
         />
@@ -108,16 +152,17 @@ export function App() {
       <section className="section" id="presets">
         <h2>Presets</h2>
         <p className="subtitle">
-          Eight built-in color palettes, or make your own.
+          Built-in color palettes, random generation, or make your own.
           Click a preset to use it in the hero&nbsp;section.
         </p>
         <div className="preset-grid">
-          {(Object.keys(presets) as PresetName[]).filter((n) => n !== 'matrix').map((name) => (
+          {(Object.keys(presets) as PresetName[]).filter((n) => n !== 'matrix' && n !== 'subtle').map((name) => (
             <button
               key={name}
               className="preset-card"
               onClick={() => {
                 setSelectedPreset(name);
+                setCustomHeroBlobs(null);
                 document.querySelector('.hero')?.scrollIntoView({ behavior: 'smooth' });
               }}
               style={{
@@ -126,7 +171,7 @@ export function App() {
                 font: 'inherit',
                 color: 'inherit',
                 borderColor:
-                  selectedPreset === name
+                  selectedPreset === name && !customHeroBlobs
                     ? 'var(--color-accent)'
                     : undefined,
               }}
@@ -144,6 +189,43 @@ export function App() {
               </div>
             </button>
           ))}
+
+          <button
+            className="preset-card"
+            onClick={() => {
+              setCustomHeroBlobs(generateRandomHeroBlobs());
+              setSelectedPreset(null);
+              document.querySelector('.hero')?.scrollIntoView({ behavior: 'smooth' });
+            }}
+            style={{
+              cursor: 'pointer',
+              textAlign: 'left',
+              font: 'inherit',
+              color: 'inherit',
+              borderStyle: 'dashed',
+              display: 'flex',
+              flexDirection: 'column',
+              borderColor: customHeroBlobs ? 'var(--color-accent)' : undefined,
+            }}
+          >
+            <div
+              className="preset-preview"
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                background: 'var(--color-surface)',
+                fontSize: '2rem',
+                color: 'var(--color-text-dim)',
+              }}
+            >
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor"><circle cx="4" cy="4" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="20" cy="8" r="2"/><circle cx="6" cy="18" r="2"/><circle cx="18" cy="17" r="2"/></svg>
+            </div>
+            <div className="preset-info">
+              <h3>Random</h3>
+              <p>Generate a random palette in the hero</p>
+            </div>
+          </button>
 
           <button
             className="preset-card"
@@ -194,7 +276,7 @@ export function App() {
           <span className="punct">...</span>
           <span className="prop">presets</span>
           <span className="punct">.</span>
-          {selectedPreset}
+          {selectedPreset ?? 'ember'}
           {'} '}
           <span className="punct">{'/>'}</span>
         </div>
@@ -233,7 +315,7 @@ export function App() {
               Tweak parameters in real time. Move your mouse over the preview for interaction.
             </p>
           </div>
-          <a href="#/playground" className="fullscreen-link">Open Fullscreen</a>
+          <a href="#/playground" className="fullscreen-link">{'\u26F6'} Open Fullscreen</a>
         </div>
         <div className="playground-layout">
           <div className="playground-preview">

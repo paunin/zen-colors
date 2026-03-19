@@ -1,9 +1,12 @@
+import { useState } from 'react';
 import { ZenColors } from 'zen-colors';
 import type { BlobShape } from 'zen-colors';
 import { usePlayground } from './hooks/usePlayground';
 import { JsonEditor } from './components/JsonEditor';
 
 export function FullscreenPlayground() {
+  const [panelHidden, setPanelHidden] = useState(false);
+
   const {
     blur, setBlur,
     speed, setSpeed,
@@ -34,10 +37,29 @@ export function FullscreenPlayground() {
         style={{ position: 'fixed', inset: 0, zIndex: 0 }}
       />
 
-      <div className="fs-panel">
+      {panelHidden && (
+        <button
+          className="fs-toggle fs-toggle-edge"
+          onClick={() => setPanelHidden(false)}
+          title="Show panel"
+        >
+          {'\u00AB'}
+        </button>
+      )}
+
+      <div className={`fs-panel${panelHidden ? ' fs-panel-hidden' : ''}`}>
         <div className="fs-panel-header">
-          <h2>Playground</h2>
-          <a href="#" className="fs-back-link">Back to site</a>
+          <div className="fs-panel-title">
+            <button
+              className="fs-toggle-inline"
+              onClick={() => setPanelHidden(true)}
+              title="Hide panel"
+            >
+              {'\u00BB'}
+            </button>
+            <h2>Playground</h2>
+          </div>
+          <a href="#" className="fs-back-link">{'\u2190'} Back to site</a>
         </div>
 
         <div className="fs-controls">

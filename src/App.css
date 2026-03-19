@@ -580,6 +580,34 @@ body {
   position: relative;
 }
 
+/* Toggle button for panel visibility */
+.fs-toggle {
+  position: fixed;
+  top: 1.25rem;
+  right: 1.25rem;
+  z-index: 12;
+  background: rgba(10, 10, 16, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  color: var(--color-text-dim);
+  width: 32px;
+  height: 32px;
+  font-size: 0.85rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.fs-toggle:hover {
+  background: rgba(10, 10, 16, 0.95);
+  color: var(--color-text);
+  border-color: var(--color-accent);
+}
+
 .fs-panel {
   position: fixed;
   top: 0;
@@ -591,6 +619,7 @@ body {
   background: rgba(10, 10, 16, 0.95);
   backdrop-filter: blur(16px);
   border-left: 1px solid rgba(34, 34, 40, 0.2);
+  transition: transform 0.35s ease, opacity 0.4s ease;
   z-index: 10;
   padding: 1.25rem 1.5rem;
   display: flex;
@@ -605,6 +634,12 @@ body {
 .fs-panel:focus-within {
   opacity: 0.7;
   border-left-color: var(--color-border);
+}
+
+.fs-panel-hidden {
+  transform: translateX(100%);
+  opacity: 0;
+  pointer-events: none;
 }
 
 .fs-panel *,
@@ -625,6 +660,35 @@ body {
 .fs-panel-header h2 {
   font-size: 1.15rem;
   font-weight: 600;
+}
+
+.fs-panel-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.fs-toggle-inline {
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  color: var(--color-text-dim);
+  width: 26px;
+  height: 26px;
+  font-size: 0.75rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  flex-shrink: 0;
+}
+
+.fs-toggle-inline:hover {
+  background: var(--color-surface-hover);
+  color: var(--color-text);
+  border-color: var(--color-accent);
 }
 
 .fs-back-link {
@@ -678,6 +742,11 @@ body {
     top: auto;
     bottom: 0;
   }
+
+  .fs-panel-hidden {
+    transform: translateY(100%);
+  }
+
 }
 
 @media (min-width: 1800px) {
