@@ -1,11 +1,19 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { ZenColors } from 'zen-colors';
 import type { BlobShape } from 'zen-colors';
 import { usePlayground } from './hooks/usePlayground';
+import { useCanvasRecorder } from './hooks/useCanvasRecorder';
 import { JsonEditor } from './components/JsonEditor';
+
+function formatTime(s: number) {
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return `${m}:${sec.toString().padStart(2, '0')}`;
+}
 
 export function FullscreenPlayground() {
   const [panelHidden, setPanelHidden] = useState(false);
+  const zenRef = useRef<HTMLDivElement>(null);
 
   const {
     blur, setBlur,
@@ -22,20 +30,23 @@ export function FullscreenPlayground() {
     randomizeBlobs,
   } = usePlayground();
 
+  const { recording, elapsed, start: startRec, stop: stopRec } = useCanvasRecorder(zenRef, blur, targetFps);
+
   return (
     <div className="fs-playground">
-      <ZenColors
-        width="100%"
-        height="100%"
-        background="#0a0a10"
-        blur={blur}
-        speed={speed}
-        blobs={scaledBlobs}
-        interactive={interactive}
-        interactionStrength={40}
-        targetFps={targetFps}
-        style={{ position: 'fixed', inset: 0, zIndex: 0 }}
-      />
+      <div ref={zenRef} style={{ position: 'fixed', inset: 0, zIndex: 0 }}>
+        <ZenColors
+          width="100%"
+          height="100%"
+          background="#0a0a10"
+          blur={blur}
+          speed={speed}
+          blobs={scaledBlobs}
+          interactive={interactive}
+          interactionStrength={40}
+          targetFps={targetFps}
+        />
+      </div>
 
       {panelHidden && (
         <button
@@ -59,7 +70,17 @@ export function FullscreenPlayground() {
             </button>
             <h2>Playground</h2>
           </div>
-          <a href="#" className="fs-back-link">{'\u2190'} Back to site</a>
+          <div className="fs-header-actions">
+            <button
+              className={`rec-btn${recording ? ' rec-btn-active' : ''}`}
+              onClick={recording ? stopRec : startRec}
+              title={recording ? 'Stop recording' : 'Record video'}
+            >
+              <span className="rec-dot" />
+              {recording ? formatTime(elapsed) : 'Rec'}
+            </button>
+            <a href="#" className="fs-back-link">{'\u2190'} Back to site</a>
+          </div>
         </div>
 
         <div className="fs-controls">

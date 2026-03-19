@@ -571,6 +571,66 @@ body {
   border-color: var(--color-accent);
 }
 
+.playground-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.rec-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 1rem;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  color: var(--color-text-dim);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  white-space: nowrap;
+}
+
+.rec-btn:hover {
+  background: var(--color-surface-hover);
+  color: var(--color-text);
+  border-color: var(--color-accent);
+}
+
+.rec-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #666;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+
+.rec-btn-active {
+  border-color: #e33;
+  color: #ff6b6b;
+}
+
+.rec-btn-active .rec-dot {
+  background: #e33;
+  animation: rec-pulse 1s ease-in-out infinite;
+}
+
+@keyframes rec-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.fs-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
 /* ---- Fullscreen Playground ---- */
 
 .fs-playground {
