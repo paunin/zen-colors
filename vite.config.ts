@@ -6,6 +6,7 @@ import { resolve } from 'path';
 export default defineConfig(({ mode }) => {
   if (mode === 'lib') {
     return {
+      publicDir: false,
       plugins: [
         react(),
         dts({ tsconfigPath: './tsconfig.lib.json', rollupTypes: true }),
