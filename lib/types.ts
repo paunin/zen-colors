@@ -90,7 +90,7 @@ export interface ZenColorsProps {
   blendMode?: BlendMode;
   /** Global animation speed multiplier (default: 1) */
   speed?: number;
-  /** Pause all animations (default: false) */
+  /** Render a single static frame and stop all animation updates (default: false) */
   paused?: boolean;
   /** Enable mouse/touch interaction with blobs (default: false) */
   interactive?: boolean;

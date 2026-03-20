@@ -79,11 +79,39 @@ export function ZenColors({
     }
   }, [resolution, padding]);
 
+  const drawFrame = useCallback((time: number) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    resizeCanvas();
+    const sm = smoothMouseRef.current;
+
+    renderFrame({
+      canvas,
+      blobs: blobStatesRef.current,
+      time,
+      globalSpeed: speed,
+      blendMode,
+      background,
+      resolution,
+      mouseX: sm.x,
+      mouseY: sm.y,
+      interactive,
+      interactionStrength,
+    });
+  }, [resizeCanvas, speed, blendMode, background, resolution, interactive, interactionStrength]);
+
   // Animation loop
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
     startTimeRef.current = performance.now();
+    lastFrameTimeRef.current = performance.now();
+
+    if (paused) {
+      drawFrame(0);
+      return;
+    }
 
     const MOUSE_LERP = 0.04;
 
@@ -93,8 +121,6 @@ export function ZenColors({
       const delta = now - lastFrameTimeRef.current;
       if (!paused && delta >= frameInterval) {
         lastFrameTimeRef.current = now - (delta % frameInterval);
-
-        resizeCanvas();
 
         const raw = mouseRef.current;
         const sm = smoothMouseRef.current;
@@ -106,31 +132,15 @@ export function ZenColors({
           sm.y = null;
         }
 
-        const canvas = canvasRef.current;
-        if (canvas) {
-          const elapsed = (performance.now() - startTimeRef.current) / 1000;
-          renderFrame({
-            canvas,
-            blobs: blobStatesRef.current,
-            time: elapsed,
-            globalSpeed: speed,
-            blendMode,
-            background,
-            resolution,
-            mouseX: sm.x,
-            mouseY: sm.y,
-            interactive,
-            interactionStrength,
-          });
-        }
+        const elapsed = (performance.now() - startTimeRef.current) / 1000;
+        drawFrame(elapsed);
       }
       rafIdRef.current = requestAnimationFrame(tick);
     };
 
-    lastFrameTimeRef.current = performance.now();
     rafIdRef.current = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafIdRef.current);
-  }, [paused, speed, blendMode, background, resolution, interactive, interactionStrength, targetFps, resizeCanvas]);
+  }, [paused, targetFps, blobs, drawFrame]);
 
   // ResizeObserver for responsive sizing
   useEffect(() => {
@@ -138,10 +148,13 @@ export function ZenColors({
     const container = containerRef.current;
     if (!container) return;
 
-    const observer = new ResizeObserver(() => resizeCanvas());
+    const observer = new ResizeObserver(() => {
+      resizeCanvas();
+      if (paused) drawFrame(0);
+    });
     observer.observe(container);
     return () => observer.disconnect();
-  }, [resizeCanvas]);
+  }, [paused, resizeCanvas, drawFrame]);
 
   // Mouse/touch tracking
   useEffect(() => {

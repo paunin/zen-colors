@@ -87,7 +87,7 @@ Available presets: `ember`, `amber`, `glacier`, `subtle`, `aurora`, `sunset`, `o
 | `blur`                | `number`                    | `60`         | CSS blur in px applied to the canvas                       |
 | `blendMode`           | `GlobalCompositeOperation`  | `'lighter'`  | Canvas composite blending mode                             |
 | `speed`               | `number`                    | `1`          | Global animation speed multiplier                          |
-| `paused`              | `boolean`                   | `false`      | Pause all animations                                       |
+| `paused`              | `boolean`                   | `false`      | Render one static frame and stop all animation updates     |
 | `interactive`         | `boolean`                   | `false`      | Blobs respond to mouse/touch                               |
 | `interactionStrength` | `number`                    | `30`         | Mouse interaction strength (0–100)                         |
 | `targetFps`           | `number`                    | `15`         | Target frames per second — limits canvas redraws. Supports fractional values (e.g. `0.5` = one frame every 2 s). Lower values save CPU/GPU |
@@ -251,7 +251,7 @@ Available presets: `ember`, `amber`, `glacier`, `subtle`, `aurora`, `sunset`, `o
 
 - **Use `resolution={0.5}`** to render at half resolution — visually similar with significantly less GPU work.
 - **Limit blob count** — 3–5 blobs covers most use cases. More than 8 may impact lower-end devices.
-- **Use `paused`** when the component is off-screen or not visible.
+- **Use `paused`** for a fully static render with no running animation loop.
 - **Blur is GPU-accelerated** — it uses CSS `filter: blur()` which is composited on the GPU, not a per-frame canvas operation.
 - **Offscreen canvas caching** — blob gradient textures are pre-rendered and reused. Changing colors or size triggers a re-render of that blob's texture only.
 

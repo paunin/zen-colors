@@ -18,6 +18,7 @@ export function FullscreenPlayground() {
   const {
     blur, setBlur,
     speed, setSpeed,
+    paused, setPaused,
     blobCount, setBlobCount,
     shape, setShape,
     interactive, setInteractive,
@@ -41,6 +42,7 @@ export function FullscreenPlayground() {
           background="#0a0a10"
           blur={blur}
           speed={speed}
+          paused={paused}
           blobs={scaledBlobs}
           interactive={interactive}
           interactionStrength={40}
@@ -83,61 +85,81 @@ export function FullscreenPlayground() {
           </div>
         </div>
 
-        <div className="fs-controls">
-          <div className="control-group">
-            <label>Blur <span>{blur}px</span></label>
-            <input type="range" min={0} max={150} value={blur} onChange={(e) => setBlur(Number(e.target.value))} />
-          </div>
-          <div className="control-group">
-            <label>Speed <span>{speed.toFixed(1)}x</span></label>
-            <input type="range" min={0} max={3} step={0.1} value={speed} onChange={(e) => setSpeed(Number(e.target.value))} />
-          </div>
-          <div className="control-group">
-            <label>Blobs <span>{blobCount}</span></label>
-            <input type="range" min={1} max={5} value={blobCount} onChange={(e) => setBlobCount(Number(e.target.value))} />
-          </div>
-          <div className="control-group">
-            <label>Size <span>{sizeAdjust > 0 ? '+' : ''}{sizeAdjust}%</span></label>
-            <input type="range" min={-100} max={100} value={sizeAdjust} onChange={(e) => setSizeAdjust(Number(e.target.value))} />
-          </div>
-          <div className="control-group">
-            <label>Shape</label>
-            <select value={shape} onChange={(e) => setShape(e.target.value as BlobShape)}>
-              <option value="circle">Circle</option>
-              <option value="ellipse">Ellipse</option>
-              <option value="beam">Beam</option>
-              <option value="ring">Ring</option>
-              <option value="triangle">Triangle</option>
-              <option value="scalene">Scalene</option>
-              <option value="square">Square</option>
-              <option value="pentagon">Pentagon</option>
-              <option value="poly">Poly (morphing)</option>
-            </select>
-          </div>
-          <div className="control-group">
-            <label>Interactive</label>
-            <select value={interactive ? 'on' : 'off'} onChange={(e) => setInteractive(e.target.value === 'on')}>
-              <option value="on">On</option>
-              <option value="off">Off</option>
-            </select>
-          </div>
-          <div className="control-group">
-            <label>FPS <span>{targetFps}</span></label>
-            <input type="range" min={0.5} max={60} step={0.5} value={targetFps} onChange={(e) => setTargetFps(Number(e.target.value))} />
-          </div>
-        </div>
+        <div className="fs-panel-body">
+          <div className="fs-section">
+            <div className="fs-section-header">
+              <h3>Controls</h3>
+              <span>Compact live tuning</span>
+            </div>
 
-        <div className="fs-editor">
-          <div className="editor-body">
-            <JsonEditor
-              value={blobsJson}
-              onChange={setBlobsJson}
-              error={jsonError}
-              minHeight="200px"
-            />
-            <div className="editor-actions">
-              <button className="apply-btn" onClick={applyJson}>Apply</button>
-              <button className="random-btn" onClick={randomizeBlobs}>Random</button>
+            <div className="fs-controls">
+              <div className="control-group">
+                <label>Blur <span>{blur}px</span></label>
+                <input type="range" min={0} max={150} value={blur} onChange={(e) => setBlur(Number(e.target.value))} />
+              </div>
+              <div className="control-group">
+                <label>Speed <span>{speed.toFixed(1)}x</span></label>
+                <input type="range" min={0} max={3} step={0.1} value={speed} onChange={(e) => setSpeed(Number(e.target.value))} />
+              </div>
+              <div className="control-group">
+                <label>Blobs <span>{blobCount}</span></label>
+                <input type="range" min={1} max={5} value={blobCount} onChange={(e) => setBlobCount(Number(e.target.value))} />
+              </div>
+              <div className="control-group">
+                <label>FPS <span>{targetFps}</span></label>
+                <input type="range" min={0.5} max={60} step={0.5} value={targetFps} onChange={(e) => setTargetFps(Number(e.target.value))} />
+              </div>
+              <div className="control-group">
+                <label>Size <span>{sizeAdjust > 0 ? '+' : ''}{sizeAdjust}%</span></label>
+                <input type="range" min={-100} max={100} value={sizeAdjust} onChange={(e) => setSizeAdjust(Number(e.target.value))} />
+              </div>
+              <div className="control-group">
+                <label>Shape</label>
+                <select value={shape} onChange={(e) => setShape(e.target.value as BlobShape)}>
+                  <option value="circle">Circle</option>
+                  <option value="ellipse">Ellipse</option>
+                  <option value="beam">Beam</option>
+                  <option value="ring">Ring</option>
+                  <option value="triangle">Triangle</option>
+                  <option value="scalene">Scalene</option>
+                  <option value="square">Square</option>
+                  <option value="pentagon">Pentagon</option>
+                  <option value="poly">Poly (morphing)</option>
+                </select>
+              </div>
+              <div className="control-group">
+                <label>Paused</label>
+                <select value={paused ? 'on' : 'off'} onChange={(e) => setPaused(e.target.value === 'on')}>
+                  <option value="off">Off</option>
+                  <option value="on">On</option>
+                </select>
+              </div>
+              <div className="control-group">
+                <label>Interactive</label>
+                <select value={interactive ? 'on' : 'off'} onChange={(e) => setInteractive(e.target.value === 'on')}>
+                  <option value="on">On</option>
+                  <option value="off">Off</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div className="fs-section fs-editor">
+            <div className="fs-section-header">
+              <h3>Blobs JSON</h3>
+              <div className="fs-editor-actions">
+                <button className="random-btn" onClick={randomizeBlobs}>Random</button>
+                <button className="apply-btn" onClick={applyJson}>Apply</button>
+              </div>
+            </div>
+
+            <div className="editor-body">
+              <JsonEditor
+                value={blobsJson}
+                onChange={setBlobsJson}
+                error={jsonError}
+                minHeight="200px"
+              />
             </div>
           </div>
         </div>
