@@ -18,7 +18,6 @@ export function FullscreenPlayground() {
   const {
     blur, setBlur,
     speed, setSpeed,
-    paused, setPaused,
     blobCount, setBlobCount,
     shape, setShape,
     interactive, setInteractive,
@@ -42,7 +41,6 @@ export function FullscreenPlayground() {
           background="#0a0a10"
           blur={blur}
           speed={speed}
-          paused={paused}
           blobs={scaledBlobs}
           interactive={interactive}
           interactionStrength={40}
@@ -125,13 +123,6 @@ export function FullscreenPlayground() {
                   <option value="square">Square</option>
                   <option value="pentagon">Pentagon</option>
                   <option value="poly">Poly (morphing)</option>
-                </select>
-              </div>
-              <div className="control-group">
-                <label>Paused</label>
-                <select value={paused ? 'on' : 'off'} onChange={(e) => setPaused(e.target.value === 'on')}>
-                  <option value="off">Off</option>
-                  <option value="on">On</option>
                 </select>
               </div>
               <div className="control-group">

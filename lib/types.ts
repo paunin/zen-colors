@@ -88,10 +88,8 @@ export interface ZenColorsProps {
   blur?: number;
   /** Canvas composite operation for blending blobs (default: 'lighter') */
   blendMode?: BlendMode;
-  /** Global animation speed multiplier (default: 1) */
+  /** Global animation speed multiplier (default: 1). Set to 0 to render a static frame and stop the animation loop. */
   speed?: number;
-  /** Render a single static frame and stop all animation updates (default: false) */
-  paused?: boolean;
   /** Enable mouse/touch interaction with blobs (default: false) */
   interactive?: boolean;
   /** Strength of mouse interaction 0-100 (default: 30) */

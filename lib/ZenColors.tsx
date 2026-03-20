@@ -24,7 +24,6 @@ export function ZenColors({
   blur = DEFAULT_BLUR,
   blendMode = DEFAULT_BLEND_MODE,
   speed = DEFAULT_SPEED,
-  paused = false,
   interactive = false,
   interactionStrength = DEFAULT_INTERACTION_STRENGTH,
   targetFps = 15,
@@ -108,7 +107,7 @@ export function ZenColors({
     startTimeRef.current = performance.now();
     lastFrameTimeRef.current = performance.now();
 
-    if (paused) {
+    if (speed === 0) {
       drawFrame(0);
       return;
     }
@@ -119,7 +118,7 @@ export function ZenColors({
 
     const tick = (now: number) => {
       const delta = now - lastFrameTimeRef.current;
-      if (!paused && delta >= frameInterval) {
+      if (delta >= frameInterval) {
         lastFrameTimeRef.current = now - (delta % frameInterval);
 
         const raw = mouseRef.current;
@@ -140,7 +139,7 @@ export function ZenColors({
 
     rafIdRef.current = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafIdRef.current);
-  }, [paused, targetFps, blobs, drawFrame]);
+  }, [speed, targetFps, blobs, drawFrame]);
 
   // ResizeObserver for responsive sizing
   useEffect(() => {
@@ -150,11 +149,11 @@ export function ZenColors({
 
     const observer = new ResizeObserver(() => {
       resizeCanvas();
-      if (paused) drawFrame(0);
+      if (speed === 0) drawFrame(0);
     });
     observer.observe(container);
     return () => observer.disconnect();
-  }, [paused, resizeCanvas, drawFrame]);
+  }, [speed, resizeCanvas, drawFrame]);
 
   // Mouse/touch tracking
   useEffect(() => {

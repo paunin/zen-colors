@@ -4,7 +4,6 @@ import type { BlobConfig, BlobShape, AnimationType } from 'zen-colors';
 export function usePlayground() {
   const [blur, setBlur] = useState(70);
   const [speed, setSpeed] = useState(1);
-  const [paused, setPaused] = useState(false);
   const [blobCount, setBlobCount] = useState(3);
   const [shape, setShape] = useState<BlobShape>('ellipse');
   const [interactive, setInteractive] = useState(true);
@@ -160,7 +159,6 @@ export function usePlayground() {
   return {
     blur, setBlur,
     speed, setSpeed,
-    paused, setPaused,
     blobCount, setBlobCount,
     shape, setShape,
     interactive, setInteractive,
